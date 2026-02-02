@@ -1,0 +1,9 @@
+encryptionsalt: v1:oJC1xGT4r8M=:v1:u6ChxyFTWqSAK5hP:yiDwpLslUDjrghdxKWrBEzBMUqcGhg==
+config:
+  aws:region: us-west-2
+  aws:profile: default
+  env: dev
+  branch: west-tech-branch
+  S3BucketName: "pulumi-python-state"
+  ec2:instanceType: t3.micro
+  
