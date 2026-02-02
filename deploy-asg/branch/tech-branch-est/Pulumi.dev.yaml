@@ -1,0 +1,22 @@
+encryptionsalt: v1:tGxRo3FC8k4=:v1:S9Xqp1nufPRzO36C:HeewjYTSNpgRCrjRHPl0EBdfBQcwCQ==
+config:
+  aws:region: us-east-2
+#  aws:accountId: "123456789012"
+  aws:profile: default
+  env: dev
+  branch: tech-branch-est
+  S3BucketName: "pulumi-python-state-est"
+  vpc:
+    cidrBlock: "172.30.0.0/16"
+    enableNatGateway: false
+    enableDnsHostnames: true
+    enableDnsSupport: true
+  ec2:
+    instanceType: t3.micro
+    desiredCapacity: 2
+    minSize: 2
+    maxSize: 4
+    volumeSize: 20
+    volumeType: gp3
+    deleteOnTermination: true
+    encrypted: true

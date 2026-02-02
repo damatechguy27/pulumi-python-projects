@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infrastructure Diagrams</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        h1 {
+            color: #333;
+            border-bottom: 3px solid #ff9900;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #666;
+            margin-top: 40px;
+        }
+        .diagram-container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+        .mermaid {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>🏗️ Infrastructure Deployment Diagrams</h1>
+    <p>Interactive diagrams for the AWS Auto Scaling Group infrastructure deployment.</p>
+
+    <h2>1. Architecture Diagram</h2>
+    <div class="diagram-container">
+        <div class="mermaid">
+graph TB
+    Internet[Internet Users]
+    IGW[Internet Gateway]
+    ALB[Application Load Balancer<br/>Port 80 - HTTP]
+    TG[Target Group<br/>Health Checks Every 30s]
+
+    subgraph VPC["VPC (172.20.0.0/16)"]
+        subgraph AZ1["Availability Zone 1"]
+            PubSub1[Public Subnet<br/>172.20.0.0/24]
+            EC2_1[EC2 Instance<br/>t3.micro - Nginx]
+        end
+
+        subgraph AZ2["Availability Zone 2"]
+            PubSub2[Public Subnet<br/>172.20.1.0/24]
+            EC2_2[EC2 Instance<br/>t3.micro - Nginx]
+        end
+
+        subgraph ASG["Auto Scaling Group"]
+            ASG_Config[Min: 2, Max: 4<br/>Desired: 2]
+        end
+    end
+
+    Internet -->|HTTP Request| IGW
+    IGW -->|Route to ALB| ALB
+    ALB -->|Forward to| TG
+    TG -->|Distribute Traffic| EC2_1
+    TG -->|Distribute Traffic| EC2_2
+    ASG_Config -.->|Manages| EC2_1
+    ASG_Config -.->|Manages| EC2_2
+
+    style Internet fill:#e1f5ff
+    style IGW fill:#ff9900
+    style ALB fill:#ff9900
+    style TG fill:#ff9900
+    style EC2_1 fill:#ec7211
+    style EC2_2 fill:#ec7211
+    style ASG_Config fill:#146eb4
+    style VPC fill:#f0f0f0
+    style AZ1 fill:#e8f4f8
+    style AZ2 fill:#e8f4f8
+        </div>
+    </div>
+
+    <h2>2. Traffic Flow Sequence</h2>
+    <div class="diagram-container">
+        <div class="mermaid">
+sequenceDiagram
+    participant User as User Browser
+    participant IGW as Internet Gateway
+    participant ALB as Application Load Balancer
+    participant TG as Target Group
+    participant EC2 as EC2 Instance (Nginx)
+
+    User->>IGW: 1. HTTP Request
+    IGW->>ALB: 2. Route to ALB
+    ALB->>TG: 3. Check Healthy Targets
+    TG-->>ALB: 4. Return Healthy Instance
+    ALB->>EC2: 5. Forward Request
+    EC2->>EC2: 6. Nginx Processes Request
+    EC2-->>ALB: 7. Return HTML Response
+    ALB-->>IGW: 8. Forward Response
+    IGW-->>User: 9. Display Web Page
+
+    Note over TG,EC2: Health checks every 30s<br/>Unhealthy instances removed
+        </div>
+    </div>
+
+    <h2>3. Component Relationships</h2>
+    <div class="diagram-container">
+        <div class="mermaid">
+graph LR
+    LT[Launch Template]
+    ASG[Auto Scaling Group]
+    TG[Target Group]
+    ALB[Application Load Balancer]
+    SG[Security Groups]
+    VPC[VPC Network]
+
+    LT -->|Defines Instance Config| ASG
+    ASG -->|Registers Instances| TG
+    TG -->|Receives Traffic From| ALB
+    SG -->|Controls Access To| ALB
+    SG -->|Controls Access To| ASG
+    VPC -->|Contains| ALB
+    VPC -->|Contains| ASG
+
+    style LT fill:#146eb4
+    style ASG fill:#ec7211
+    style TG fill:#ff9900
+    style ALB fill:#ff9900
+    style SG fill:#dd344c
+    style VPC fill:#7aa116
+        </div>
+    </div>
+
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default',
+            securityLevel: 'loose',
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true
+            }
+        });
+    </script>
+</body>
+</html>
