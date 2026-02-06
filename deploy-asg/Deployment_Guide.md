@@ -29,46 +29,43 @@ This infrastructure deploys a highly available, scalable web application on AWS 
 > **Note**: These diagrams use Mermaid syntax. View this file on GitHub, GitLab, or VS Code with the Mermaid extension for the best experience.
 
 ```mermaid
-graph TB
-    Internet[Internet Users]
-    IGW[Internet Gateway]
-    ALB[Application Load Balancer<br/>Port 80 - HTTP]
-    TG[Target Group<br/>Health Checks Every 30s]
+flowchart TB
+    Internet["Internet Users"]
+    IGW["Internet Gateway"]
+    ALB["Application Load Balancer\nPort 80 - HTTP"]
+    TG["Target Group\nHealth Checks Every 30s"]
 
-    subgraph VPC["VPC (172.20.0.0/16)"]
+    subgraph VPC["VPC 172.20.0.0/16"]
         subgraph AZ1["Availability Zone 1"]
-            PubSub1[Public Subnet<br/>172.20.0.0/24]
-            EC2_1[EC2 Instance<br/>t3.micro - Nginx]
+            PubSub1["Public Subnet\n172.20.0.0/24"]
+            EC2_1["EC2 Instance\nt3.micro - Nginx"]
         end
 
         subgraph AZ2["Availability Zone 2"]
-            PubSub2[Public Subnet<br/>172.20.1.0/24]
-            EC2_2[EC2 Instance<br/>t3.micro - Nginx]
+            PubSub2["Public Subnet\n172.20.1.0/24"]
+            EC2_2["EC2 Instance\nt3.micro - Nginx"]
         end
 
         subgraph ASG["Auto Scaling Group"]
-            ASG_Config[Min: 2, Max: 4<br/>Desired: 2]
+            ASG_Config["Min: 2, Max: 4\nDesired: 2"]
         end
     end
 
-    Internet -->|HTTP Request| IGW
-    IGW -->|Route to ALB| ALB
-    ALB -->|Forward to| TG
-    TG -->|Distribute Traffic| EC2_1
-    TG -->|Distribute Traffic| EC2_2
-    ASG_Config -.->|Manages| EC2_1
-    ASG_Config -.->|Manages| EC2_2
+    Internet -->|"HTTP Request"| IGW
+    IGW -->|"Route to ALB"| ALB
+    ALB -->|"Forward to"| TG
+    TG -->|"Distribute Traffic"| EC2_1
+    TG -->|"Distribute Traffic"| EC2_2
+    ASG_Config -.->|"Manages"| EC2_1
+    ASG_Config -.->|"Manages"| EC2_2
 
-    style Internet fill:#e1f5ff
-    style IGW fill:#ff9900
-    style ALB fill:#ff9900
-    style TG fill:#ff9900
-    style EC2_1 fill:#ec7211
-    style EC2_2 fill:#ec7211
-    style ASG_Config fill:#146eb4
-    style VPC fill:#f0f0f0
-    style AZ1 fill:#e8f4f8
-    style AZ2 fill:#e8f4f8
+    style Internet fill:#e1f5ff,stroke:#333
+    style IGW fill:#ff9900,stroke:#333,color:#fff
+    style ALB fill:#ff9900,stroke:#333,color:#fff
+    style TG fill:#ff9900,stroke:#333,color:#fff
+    style EC2_1 fill:#ec7211,stroke:#333,color:#fff
+    style EC2_2 fill:#ec7211,stroke:#333,color:#fff
+    style ASG_Config fill:#146eb4,stroke:#333,color:#fff
 ```
 
 ### Traffic Flow Sequence
@@ -79,7 +76,7 @@ sequenceDiagram
     participant IGW as Internet Gateway
     participant ALB as Application Load Balancer
     participant TG as Target Group
-    participant EC2 as EC2 Instance (Nginx)
+    participant EC2 as EC2 Instance Nginx
 
     User->>IGW: 1. HTTP Request
     IGW->>ALB: 2. Route to ALB
@@ -91,34 +88,34 @@ sequenceDiagram
     ALB-->>IGW: 8. Forward Response
     IGW-->>User: 9. Display Web Page
 
-    Note over TG,EC2: Health checks every 30s<br/>Unhealthy instances removed
+    Note over TG,EC2: Health checks every 30s Unhealthy instances removed
 ```
 
 ### Component Relationships
 
 ```mermaid
-graph LR
-    LT[Launch Template]
-    ASG[Auto Scaling Group]
-    TG[Target Group]
-    ALB[Application Load Balancer]
-    SG[Security Groups]
-    VPC[VPC Network]
+flowchart LR
+    LT["Launch Template"]
+    ASG["Auto Scaling Group"]
+    TG["Target Group"]
+    ALB["Application Load Balancer"]
+    SG["Security Groups"]
+    VPC["VPC Network"]
 
-    LT -->|Defines Instance Config| ASG
-    ASG -->|Registers Instances| TG
-    TG -->|Receives Traffic From| ALB
-    SG -->|Controls Access To| ALB
-    SG -->|Controls Access To| ASG
-    VPC -->|Contains| ALB
-    VPC -->|Contains| ASG
+    LT -->|"Defines Instance Config"| ASG
+    ASG -->|"Registers Instances"| TG
+    TG -->|"Receives Traffic From"| ALB
+    SG -->|"Controls Access To"| ALB
+    SG -->|"Controls Access To"| ASG
+    VPC -->|"Contains"| ALB
+    VPC -->|"Contains"| ASG
 
-    style LT fill:#146eb4
-    style ASG fill:#ec7211
-    style TG fill:#ff9900
-    style ALB fill:#ff9900
-    style SG fill:#dd344c
-    style VPC fill:#7aa116
+    style LT fill:#146eb4,stroke:#333,color:#fff
+    style ASG fill:#ec7211,stroke:#333,color:#fff
+    style TG fill:#ff9900,stroke:#333,color:#fff
+    style ALB fill:#ff9900,stroke:#333,color:#fff
+    style SG fill:#dd344c,stroke:#333,color:#fff
+    style VPC fill:#7aa116,stroke:#333,color:#fff
 ```
 
 ---

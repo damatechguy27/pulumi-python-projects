@@ -89,18 +89,28 @@ class LaunchTemplate(pulumi.ComponentResource):
 
         if user_data:
             # Base64 encode user data for launch template
-            user_data_encoded = base64.b64encode(user_data.encode("utf-8")).decode("utf-8")
-            lt_args["user_data"] = user_data_encoded
+            if isinstance(user_data, pulumi.Output):
+                lt_args["user_data"] = user_data.apply(
+                    lambda ud: base64.b64encode(ud.encode("utf-8")).decode("utf-8")
+                )
+            else:
+                lt_args["user_data"] = base64.b64encode(
+                    user_data.encode("utf-8")
+                ).decode("utf-8")
 
         if iam_instance_profile:
-            lt_args["iam_instance_profile"] = aws.ec2.LaunchTemplateIamInstanceProfileArgs(
-                name=iam_instance_profile
-                if not iam_instance_profile.startswith("arn:")
-                else None,
-                arn=iam_instance_profile
-                if iam_instance_profile.startswith("arn:")
-                else None,
-            )
+            if isinstance(iam_instance_profile, pulumi.Output):
+                lt_args["iam_instance_profile"] = aws.ec2.LaunchTemplateIamInstanceProfileArgs(
+                    name=iam_instance_profile,
+                )
+            elif iam_instance_profile.startswith("arn:"):
+                lt_args["iam_instance_profile"] = aws.ec2.LaunchTemplateIamInstanceProfileArgs(
+                    arn=iam_instance_profile,
+                )
+            else:
+                lt_args["iam_instance_profile"] = aws.ec2.LaunchTemplateIamInstanceProfileArgs(
+                    name=iam_instance_profile,
+                )
 
         if enable_monitoring:
             lt_args["monitoring"] = aws.ec2.LaunchTemplateMonitoringArgs(

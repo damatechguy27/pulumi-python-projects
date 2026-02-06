@@ -8,7 +8,7 @@ config:
   S3BucketName: "pulumi-python-state-wst"
   vpc:
     cidrBlock: "172.20.0.0/16"
-    enableNatGateway: false
+    enableNatGateway: true
     enableDnsHostnames: true
     enableDnsSupport: true
   ec2:
@@ -16,7 +16,7 @@ config:
     desiredCapacity: 2
     minSize: 2
     maxSize: 4
-    volumeSize: 20
+    volumeSize: 30
     volumeType: gp3
     deleteOnTermination: true
     encrypted: true

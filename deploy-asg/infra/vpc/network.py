@@ -48,13 +48,18 @@ class VpcNetwork(pulumi.ComponentResource):
         private_subnet_cidrs = args.get("private_subnet_cidrs")
 
         if not public_subnet_cidrs:
+            # Derive subnet CIDRs from the VPC CIDR block
+            base_octets = cidr_block.split(".")[0:2]  # e.g. ["172", "20"]
+            base = ".".join(base_octets)
             public_subnet_cidrs = [
-                f"172.0.{i}.0/24" for i in range(len(availability_zones))
+                f"{base}.{i}.0/24" for i in range(len(availability_zones))
             ]
 
         if not private_subnet_cidrs:
+            base_octets = cidr_block.split(".")[0:2]
+            base = ".".join(base_octets)
             private_subnet_cidrs = [
-                f"172.0.{i + 10}.0/24" for i in range(len(availability_zones))
+                f"{base}.{i + 10}.0/24" for i in range(len(availability_zones))
             ]
 
         # Create VPC
